@@ -40,4 +40,6 @@ Thumbs.db
 *.dotCover
 
 
-dpmatch/trainingset
+dpmatch/trainingset/
+dpmatch/testset/
+
