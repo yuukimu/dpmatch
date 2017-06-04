@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace dpmatch
 {
@@ -9,18 +8,30 @@ namespace dpmatch
         public static void Main(string[] args)
         {
             FileUtil futil = new FileUtil();
-            List<string> fileList = new List<string>();
-            try
-            {
-                fileList = futil.GetFileList("./trainingset");
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                Console.WriteLine(e);
+            List<string> template = futil.GetTemplate();
+            List<string> testset = futil.GetTestSet();
+
+            if (template.Count.Equals(0) && testset.Count.Equals(0)) {
+                Console.WriteLine("テンプレート及び評価データがありません");
                 return;
             }
+            if (template.Count.Equals(0)) {
+				Console.WriteLine("テンプレートがありません");
+				return;
+			}
+            if (testset.Count.Equals(0)) {
+				Console.WriteLine("評価データがありません");
+				return;
+			}
 
-            List<double[]> file;
+            MainLoop(template, testset, futil);
+
+        }
+
+        static void MainLoop(List<string> template, List<string> testset, FileUtil futil)
+        {
+            List<double[]> testData;
+            List<double[]> tempData;
             while (true)
             {
                 Console.WriteLine("1: パワー系列  2: デルタパワー  0: 終了");
@@ -30,22 +41,39 @@ namespace dpmatch
                     Console.WriteLine("終了しました");
                     break;
                 }
-                foreach (var name in fileList)
-				{
-					file = futil.ReadEachLine(name);
-					DPMatching dp = new DPMatching(file);
-					if (inputFromKey.Equals("1"))
-					{
-						Console.WriteLine("パワー系列で比較");
-                        dp.matchingByPower();
-                    } else if (inputFromKey.Equals("2"))
+                foreach (var testName in testset)
+                {
+                    testData = futil.ReadEachLine(testName);
+                    double minDistance = -1;
+                    string minTemp = "";
+                    foreach (var tempName in template)
                     {
-                        Console.WriteLine("デルタパワーで比較");
-                        dp.matchingByDcepstrum();
-                    }
+                        tempData = futil.ReadEachLine(tempName);
+                        DPMatching dp = new DPMatching();
+						if (inputFromKey.Equals("1"))
+						{
+						    double distance = dp.MatchingByPower(testData, tempData);
+                            if (minDistance > distance || minDistance.Equals(-1))
+                            {
+                                minDistance = distance;
+                                minTemp = tempName;
+                            }
+                        }
+						else if (inputFromKey.Equals("2"))
+						{
+						    double distance = dp.MatchingByDcepstrum(testData, tempData);
+							if (minDistance > distance || minDistance.Equals(-1))
+							{
+								minDistance = distance;
+								minTemp = tempName;
+							}
+						}
+					}
+                    Console.WriteLine(testName + "," + minTemp);
                 }
-            }
-
+			}
         }
+
+
     }
 }
