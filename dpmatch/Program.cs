@@ -99,10 +99,13 @@ namespace dpmatch
 					if (testName.Split('_')[1].Equals(minTemp.Split('_')[1]))
 					{
 						correctNum += 1;
-                        Console.WriteLine(testName + " : 正解");
-                    } else {
-                        Console.WriteLine(testName + " : 不正解");
-                    }
+						Console.WriteLine(testName + " : 正解");
+					}
+					else
+					{
+						Console.WriteLine(testName + " : 不正解");
+					}
+
                 }
                 double ratio = Math.Round((1.0 * correctNum / testset.Count) * 100, 2);
                 Console.WriteLine($"正解率 : {ratio}");

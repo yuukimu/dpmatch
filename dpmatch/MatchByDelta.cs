@@ -50,6 +50,7 @@ namespace dpmatch
 
 		void CalcOther(ref double[,] ary, ref int[,][] back)
 		{
+            int diff = Math.Abs(testData.Count - tempData.Count);
 			for (int i = 1; i < testData.Count; i++)
 			{
 				for (int j = 1; j < tempData.Count; j++)
@@ -61,7 +62,7 @@ namespace dpmatch
 
 					// 縦
 					double vertical = 2 * Math.Pow(testData[i] - tempData[j], 2) + ary[i, j - 1];
-					if (minDist > vertical)
+                    if (minDist > vertical)
 					{
 						minDist = vertical;
 						back[i, j] = new int[] { i, j - 1 };
