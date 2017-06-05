@@ -24,6 +24,28 @@ namespace dpmatch
             return lines;
         }
 
+        // パワー系列とデルタパワーのリストを取得
+		public List<List<double>> ReadEachLine2(string path)
+		{
+			System.Text.RegularExpressions.Regex splitReg = new System.Text.RegularExpressions.Regex(@"\t+");
+            List<List<double>> data = new List<List<double>>();
+			StreamReader file = new StreamReader(path);
+            List<double> power = new List<double>();
+            List<double> dcepstrum = new List<double>();
+			string line;
+			string[] values;
+			while ((line = file.ReadLine()) != null)
+			{
+				values = splitReg.Split(line);
+                power.Add(double.Parse(values[0]));
+                dcepstrum.Add(double.Parse(values[1]));
+			}
+			file.Close();
+            data.Add(power);
+            data.Add(dcepstrum);
+            return data;
+		}
+
 		public List<string> GetTemplate()
 		{
 			List<string> template = new List<string>();

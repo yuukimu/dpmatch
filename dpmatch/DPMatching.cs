@@ -58,7 +58,6 @@ namespace dpmatch
                         min = yoko;
                         back[i][j] = 2;
                     }
-
                     ary[i][j] = min;
                 }
             }
@@ -84,7 +83,6 @@ namespace dpmatch
                     default:
                         break;
                 }
-                //Console.WriteLine(bi + ", " + bj);
             }
             //double distance = CalcDPDistance(ary);
             return Math.Sqrt(distance);
