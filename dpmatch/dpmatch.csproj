@@ -35,9 +35,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FileUtil.cs" />
-    <Compile Include="DPMatching.cs" />
-    <Compile Include="DPMatch.cs" />
     <Compile Include="MatchByDelta.cs" />
+    <Compile Include="MatchByPower.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="testset\m10_1_1.pow" />

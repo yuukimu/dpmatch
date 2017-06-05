@@ -24,57 +24,11 @@ namespace dpmatch
 				return;
 			}
 
-            MainLoop2(template, testset, futil);
+            MainLoop(template, testset, futil);
 
         }
 
-        static void MainLoop(List<string> template, List<string> testset, FileUtil futil)
-        {
-            List<double[]> testData;
-            List<double[]> tempData;
-            while (true)
-            {
-                Console.WriteLine("1: パワー系列  2: デルタパワー  0: 終了");
-                string inputFromKey = Console.ReadLine();
-                if (inputFromKey.Equals("0"))
-                {
-                    Console.WriteLine("終了しました");
-                    break;
-                }
-                foreach (var testName in testset)
-                {
-                    testData = futil.ReadEachLine(testName);
-                    double minDistance = -1;
-                    string minTemp = "";
-                    foreach (var tempName in template)
-                    {
-                        tempData = futil.ReadEachLine(tempName);
-                        DPMatching dp = new DPMatching();
-						if (inputFromKey.Equals("1"))
-						{
-						    double distance = dp.MatchingByPower(testData, tempData);
-                            if (minDistance > distance || minDistance.Equals(-1))
-                            {
-                                minDistance = distance;
-                                minTemp = tempName;
-                            }
-                        }
-						else if (inputFromKey.Equals("2"))
-						{
-						    double distance = dp.MatchingByDcepstrum(testData, tempData);
-							if (minDistance > distance || minDistance.Equals(-1))
-							{
-								minDistance = distance;
-								minTemp = tempName;
-							}
-						}
-					}
-                    Console.WriteLine(testName + "," + minTemp);
-                }
-			}
-        }
-
-		static void MainLoop2(List<string> template, List<string> testset, FileUtil futil)
+		static void MainLoop(List<string> template, List<string> testset, FileUtil futil)
 		{
             Dictionary<string, List<double>> testPowerData = new Dictionary<string, List<double>>();
             Dictionary<string, List<double>> testDeltaData = new Dictionary<string, List<double>>();
@@ -95,11 +49,11 @@ namespace dpmatch
                 tempDeltaData.Add(tempName, data[1]);
 			}
 
-            DPMatch dp = new DPMatch();
+            MatchByPower doPower = new MatchByPower();
             MatchByDelta dpDelta = new MatchByDelta();
             while (true)
             {
-				Console.WriteLine("1: パワー系列  2: デルタパワー  0: 終了");
+				Console.WriteLine("1: パワー系列  2: デルタパワー  3: 両方  0: 終了");
 				string inputFromKey = Console.ReadLine();
 				if (inputFromKey.Equals("0"))
 				{
@@ -115,7 +69,7 @@ namespace dpmatch
                     {
 						if (inputFromKey.Equals("1"))
 						{
-                            double distance = dp.MatchByPower(testPowerData[testName], tempPowerData[tempName]);
+                            double distance = doPower.Match(testPowerData[testName], tempPowerData[tempName]);
 							if (minDistance > distance || minDistance.Equals(-1))
 							{
 								minDistance = distance;
@@ -131,6 +85,16 @@ namespace dpmatch
 								minTemp = tempName;
 							}
 						}
+                        else if (inputFromKey.Equals("3"))
+                        {
+							double distance = doPower.Match(testPowerData[testName], tempPowerData[tempName]);
+                            distance += dpDelta.Match(testDeltaData[testName], tempDeltaData[tempName]);
+							if (minDistance > distance || minDistance.Equals(-1))
+							{
+								minDistance = distance;
+								minTemp = tempName;
+							}
+                        }
                     }
 					if (testName.Split('_')[1].Equals(minTemp.Split('_')[1]))
 					{
@@ -140,7 +104,8 @@ namespace dpmatch
                         Console.WriteLine(testName + " : 不正解");
                     }
                 }
-                Console.WriteLine($"正解率 : {(1.0 * correctNum / testset.Count) * 100}");
+                double ratio = Math.Round((1.0 * correctNum / testset.Count) * 100, 2);
+                Console.WriteLine($"正解率 : {ratio}");
             }
 		}
 
